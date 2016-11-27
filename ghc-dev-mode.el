@@ -1,8 +1,8 @@
-;;; ghc-dev-mode.el ---
+;;;; ghc-dev-mode.el ---
 
-;; Copyright (c) 2014 Adam Sandberg Eriksson. All rights reserved.
+;;; Copyright (c) 2016 Adam Sandberg Eriksson. All rights reserved.
 
-;;; Settings
+;;;; Settings
 
 (defgroup ghc-dev nil "GHC dev mode" :prefix 'ghc :group 'haskell)
 
@@ -23,15 +23,20 @@
 
 ;;; Functions
 
+(defun ghc-save-buffers ()
+  (interactive)
+  (save-some-buffers
+   (not compilation-ask-about-save)
+   (if (boundp 'compilation-save-buffers-predicate) ;; since Emacs 24.1(?)
+       compilation-save-buffers-predicate)))
+
 (defun ghc-rgrep (regexp)
   (interactive (list (progn (grep-compute-defaults) (grep-read-regexp))))
   (rgrep regexp "*hs" (concat ghc-source-location "/compiler/")))
 
 (defun ghc-compile ()
   (interactive)
-  (save-some-buffers (not compilation-ask-about-save)
-                     (if (boundp 'compilation-save-buffers-predicate) ;; since Emacs 24.1(?)
-                         compilation-save-buffers-predicate))
+  (ghc-save-buffers)
   (let ((compile-command
          (concat "EXTRA_HC_OPTS=-ferror-spans "
                  "cd " ghc-source-location "; "
