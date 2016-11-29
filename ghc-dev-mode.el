@@ -32,7 +32,8 @@
 
 (defun ghc-rgrep (regexp)
   (interactive (list (progn (grep-compute-defaults) (grep-read-regexp))))
-  (rgrep regexp "*hs" (concat ghc-source-location "/compiler/")))
+  (let ((grep-find-ignored-directories '("stage1" "stage2")))
+    (rgrep regexp "*.hs *.y *.x" (concat ghc-source-location "/compiler/"))))
 
 (defun ghc-compile ()
   (interactive)
